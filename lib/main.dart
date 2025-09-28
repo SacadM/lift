@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'providers/workout_provider.dart';
 import 'providers/diet_provider.dart';
+import 'providers/ingredient_provider.dart';
+import 'providers/meal_template_provider.dart';
 import 'screens/workouts_screen.dart';
 import 'screens/diet_overview_screen.dart';
 
@@ -19,6 +21,8 @@ class LiftApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => WorkoutProvider()),
         ChangeNotifierProvider(create: (_) => DietProvider()),
+        ChangeNotifierProvider(create: (_) => IngredientProvider()),
+        ChangeNotifierProvider(create: (_) => MealTemplateProvider()),
       ],
       child: const CupertinoApp(
         debugShowCheckedModeBanner: false,
