@@ -120,71 +120,95 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
   }
 
   void _showSuccessMessage() {
-    showCupertinoDialog(
-      context: context, 
+    showCupertinoModalPopup(
+      context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Success'),
-          content: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.activeGreen.withOpacity(0.2),
-                  shape: BoxShape.circle,
+        return SafeArea(
+          child: Container(
+            height: 220,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            color: CupertinoColors.systemBackground,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Success', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.activeGreen.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        CupertinoIcons.check_mark,
+                        color: CupertinoColors.activeGreen,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(child: Text('Workout updated successfully')),
+                  ],
                 ),
-                child: const Icon(
-                  CupertinoIcons.check_mark,
-                  color: CupertinoColors.activeGreen,
-                  size: 20,
+                const Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: CupertinoButton.filled(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text('Workout updated successfully'),
-              ),
-            ],
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Return to workout progress screen
-              },
+              ],
             ),
-          ],
+          ),
         );
-      }
+      },
     );
   }
 
   Future<void> _confirmDeletion(BuildContext context) async {
     final workoutProvider = Provider.of<WorkoutProvider>(context, listen: false);
     
-    return showCupertinoDialog(
+    return showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text('Delete "${widget.workout.name}"?'),
-          content: const Text('This action cannot be undone.'),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        return SafeArea(
+          child: Container(
+            height: 240,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            color: CupertinoColors.systemBackground,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Delete "${widget.workout.name}"?', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                const Text('This action cannot be undone.'),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    CupertinoButton(
+                      color: CupertinoColors.destructiveRed,
+                      child: const Text('Delete'),
+                      onPressed: () {
+                        workoutProvider.deleteWorkout(widget.workout.id);
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-            CupertinoDialogAction(
-              isDestructiveAction: true,
-              child: const Text('Delete'),
-              onPressed: () {
-                workoutProvider.deleteWorkout(widget.workout.id);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Return to workout progress screen
-              },
-            ),
-          ],
+          ),
         );
       },
     );

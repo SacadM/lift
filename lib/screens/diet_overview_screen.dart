@@ -61,6 +61,13 @@ class _DietOverviewScreenState extends State<DietOverviewScreen> {
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
+            const SizedBox(height: 6),
+            Center(
+              child: Text(
+                'Water: ${dietProvider.waterMlForDate(_selectedDate)} ml',
+                style: const TextStyle(fontSize: 14, color: CupertinoColors.systemGrey),
+              ),
+            ),
             const SizedBox(height: 24),
             // Macro pie chart
             MacroPieChart(

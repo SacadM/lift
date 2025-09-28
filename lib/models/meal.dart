@@ -17,7 +17,7 @@ class Meal {
   double get totalProtein => ingredients.fold(0, (p, i) => p + i.protein);
   double get totalCarbs   => ingredients.fold(0, (p, i) => p + i.carbs);
   double get totalFat     => ingredients.fold(0, (p, i) => p + i.fat);
-  double get calories     => totalProtein * 4 + totalCarbs * 4 + totalFat * 9;
+  double get calories     => ingredients.fold(0, (p, i) => p + i.calories);
 
   Map<String, dynamic> toMap() {
     return {

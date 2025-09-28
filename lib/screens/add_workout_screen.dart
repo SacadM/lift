@@ -159,41 +159,50 @@ class _AddWorkoutScreenState extends State<AddWorkoutScreen> {
   }
   
   void _showSuccessMessage() {
-    showCupertinoDialog(
-      context: context, 
+    showCupertinoModalPopup(
+      context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Success'),
-          content: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.activeGreen.withOpacity(0.2),
-                  shape: BoxShape.circle,
+        return SafeArea(
+          child: Container(
+            height: 220,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            color: CupertinoColors.systemBackground,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Success', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.activeGreen.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        CupertinoIcons.check_mark,
+                        color: CupertinoColors.activeGreen,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(child: Text('Workout added successfully')),
+                  ],
                 ),
-                child: const Icon(
-                  CupertinoIcons.check_mark,
-                  color: CupertinoColors.activeGreen,
-                  size: 20,
+                const Spacer(),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: CupertinoButton.filled(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text('Workout added successfully'),
-              ),
-            ],
-          ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              ],
             ),
-          ],
+          ),
         );
-      }
+      },
     );
   }
   

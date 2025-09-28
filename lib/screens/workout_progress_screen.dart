@@ -642,30 +642,41 @@ class _WorkoutProgressScreenState extends State<WorkoutProgressScreen> {
   }
   
   Future<void> _confirmDeletion(BuildContext context, Workout workout, WorkoutProvider workoutProvider) async {
-    return showCupertinoDialog(
+    return showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: const Text('Delete Workout'),
-          content: Text(
-            'Are you sure you want to delete this ${widget.workoutName} workout from ${DateFormat('MMM d, yyyy').format(workout.date)}?'
+        return SafeArea(
+          child: Container(
+            height: 240,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            color: CupertinoColors.systemBackground,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Delete Workout', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text('Are you sure you want to delete this ${widget.workoutName} workout from ${DateFormat('MMM d, yyyy').format(workout.date)}?'),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    CupertinoButton(
+                      color: CupertinoColors.destructiveRed,
+                      child: const Text('Delete'),
+                      onPressed: () {
+                        workoutProvider.deleteWorkout(workout.id);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            CupertinoDialogAction(
-              isDestructiveAction: true,
-              child: const Text('Delete'),
-              onPressed: () {
-                workoutProvider.deleteWorkout(workout.id);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );

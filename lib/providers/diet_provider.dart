@@ -95,6 +95,21 @@ class DietProvider with ChangeNotifier {
     return (protein: p, carbs: c, fat: f);
   }
 
+  // Total water (ml) consumed for a single day.
+  // Sums weights of any ingredient named 'Water' (case-insensitive).
+  int waterMlForDate(DateTime date) {
+    final mealsToday = mealsForDate(date);
+    double total = 0;
+    for (final meal in mealsToday) {
+      for (final ing in meal.ingredients) {
+        if (ing.name.trim().toLowerCase() == 'water') {
+          total += ing.weight; // 1g ~= 1ml for water
+        }
+      }
+    }
+    return total.round();
+  }
+
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 

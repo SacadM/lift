@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/meal_template.dart';
+import '../models/meal_ingredient.dart';
 
 class MealTemplateProvider with ChangeNotifier {
   final List<MealTemplate> _templates = [];
@@ -18,6 +19,29 @@ class MealTemplateProvider with ChangeNotifier {
       _templates
         ..clear()
         ..addAll(raw.map((e) => MealTemplate.fromMap(json.decode(e))));
+      // Ensure a default 'Water' template exists if a Water ingredient is present.
+      final hasWaterTemplate = _templates.any((t) => t.name.trim().toLowerCase() == 'water');
+      if (!hasWaterTemplate) {
+        final ingRaw = prefs.getStringList('ingredients') ?? [];
+        String? waterId;
+        for (final s in ingRaw) {
+          try {
+            final m = json.decode(s) as Map<String, dynamic>;
+            final name = (m['name'] as String?)?.trim().toLowerCase();
+            if (name == 'water') {
+              waterId = m['id'] as String?;
+              break;
+            }
+          } catch (_) {}
+        }
+        if (waterId != null) {
+          _templates.add(MealTemplate(
+            name: 'Water',
+            items: [MealIngredient(ingredientId: waterId, weight: 250)], // default 250ml
+          ));
+          await _save();
+        }
+      }
       notifyListeners();
     } catch (e) {
       debugPrint('Error loading templates: $e');
@@ -86,4 +110,3 @@ class MealTemplateProvider with ChangeNotifier {
     }
   }
 }
-

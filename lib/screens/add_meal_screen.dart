@@ -109,54 +109,70 @@ class _AddMealScreenState extends State<AddMealScreen> {
     double? initial,
   }) async {
     final ctrl = TextEditingController(text: initial == null ? '' : initial.toStringAsFixed(0));
-    await showCupertinoDialog(
+    await showCupertinoModalPopup(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
-        title: Text(title),
-        content: Column(
+      builder: (_) => Container(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        height: 260,
+        color: CupertinoColors.systemBackground,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 8),
+            Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             CupertinoTextField(
               controller: ctrl,
               placeholder: 'Weight (g)',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
+            SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    child: const Text('Cancel'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  CupertinoButton.filled(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      final g = double.tryParse(ctrl.text) ?? 0;
+                      if (g > 0) {
+                        onConfirmed(g);
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          CupertinoDialogAction(
-            child: const Text('OK'),
-            onPressed: () {
-              final g = double.tryParse(ctrl.text) ?? 0;
-              if (g > 0) {
-                onConfirmed(g);
-                Navigator.of(context).pop();
-              }
-            },
-          ),
-        ],
       ),
     );
   }
 
   Future<void> _promptMacrosPer100({
     required Ingredient existing,
-    required void Function(double p, double c, double f) onConfirmed,
+    required void Function(double p, double c, double f, double kcal) onConfirmed,
   }) async {
     final pC = TextEditingController(text: existing.proteinPer100g.toString());
     final cC = TextEditingController(text: existing.carbsPer100g.toString());
     final fC = TextEditingController(text: existing.fatPer100g.toString());
-    await showCupertinoDialog(
+    final kC = TextEditingController(text: existing.caloriesPer100g.toString());
+    await showCupertinoModalPopup(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
-        title: Text('Adjust macros for ${existing.name} (per 100g)'),
-        content: Column(
+      builder: (_) => Container(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        height: 420,
+        color: CupertinoColors.systemBackground,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 8),
+            Text('Adjust macros for ${existing.name} (per 100g)',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             CupertinoTextField(
               controller: pC,
               placeholder: 'Protein /100g',
@@ -174,24 +190,36 @@ class _AddMealScreenState extends State<AddMealScreen> {
               placeholder: 'Fat /100g',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
+            const SizedBox(height: 8),
+            CupertinoTextField(
+              controller: kC,
+              placeholder: 'Calories /100g (kcal)',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    child: const Text('Cancel'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  CupertinoButton.filled(
+                    child: const Text('Update'),
+                    onPressed: () {
+                      final p = double.tryParse(pC.text) ?? existing.proteinPer100g;
+                      final c = double.tryParse(cC.text) ?? existing.carbsPer100g;
+                      final f = double.tryParse(fC.text) ?? existing.fatPer100g;
+                      final k = double.tryParse(kC.text) ?? existing.caloriesPer100g;
+                      onConfirmed(p, c, f, k);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          CupertinoDialogAction(
-            child: const Text('Update'),
-            onPressed: () {
-              final p = double.tryParse(pC.text) ?? existing.proteinPer100g;
-              final c = double.tryParse(cC.text) ?? existing.carbsPer100g;
-              final f = double.tryParse(fC.text) ?? existing.fatPer100g;
-              onConfirmed(p, c, f);
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
       ),
     );
   }
@@ -200,20 +228,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
     final pC = TextEditingController();
     final cC = TextEditingController();
     final fC = TextEditingController();
+    final kC = TextEditingController();
     final wC = TextEditingController();
-    await showCupertinoDialog(
+    await showCupertinoModalPopup(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
-        title: Text('Create "$name"'),
-        content: Column(
+      builder: (_) => Container(
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 8),
+        height: 480,
+        color: CupertinoColors.systemBackground,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 8),
+            Text('Create "$name"', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             CupertinoTextField(
               controller: wC,
               placeholder: 'Weight to add (g)',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             const Text('Macros per 100g', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             CupertinoTextField(
@@ -233,39 +266,52 @@ class _AddMealScreenState extends State<AddMealScreen> {
               placeholder: 'Fat /100g',
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
             ),
+            const SizedBox(height: 8),
+            CupertinoTextField(
+              controller: kC,
+              placeholder: 'Calories /100g (kcal)',
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+            SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    child: const Text('Cancel'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  CupertinoButton.filled(
+                    child: const Text('Create'),
+                    onPressed: () async {
+                      final g = double.tryParse(wC.text) ?? 0;
+                      final p = double.tryParse(pC.text) ?? 0;
+                      final c = double.tryParse(cC.text) ?? 0;
+                      final f = double.tryParse(fC.text) ?? 0;
+                      final kcal = double.tryParse(kC.text);
+                      if (g > 0 && kcal != null) {
+                        final iProv = context.read<IngredientProvider>();
+                        final newIng = Ingredient(
+                          name: name.trim(),
+                          weight: 100,
+                          proteinPer100g: p,
+                          carbsPer100g: c,
+                          fatPer100g: f,
+                          caloriesPer100g: kcal,
+                        );
+                        await iProv.add(newIng);
+                        setState(() {
+                          _items.add(MealIngredient(ingredientId: newIng.id, weight: g));
+                          _ingredientSearchController.clear();
+                        });
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          CupertinoDialogAction(
-            child: const Text('Create'),
-            onPressed: () async {
-              final g = double.tryParse(wC.text) ?? 0;
-              final p = double.tryParse(pC.text) ?? 0;
-              final c = double.tryParse(cC.text) ?? 0;
-              final f = double.tryParse(fC.text) ?? 0;
-              if (g > 0) {
-                final iProv = context.read<IngredientProvider>();
-                final newIng = Ingredient(
-                  name: name.trim(),
-                  weight: 100, // default reference weight stored; not used in meal calc
-                  proteinPer100g: p,
-                  carbsPer100g: c,
-                  fatPer100g: f,
-                );
-                await iProv.add(newIng);
-                setState(() {
-                  _items.add(MealIngredient(ingredientId: newIng.id, weight: g));
-                  _ingredientSearchController.clear();
-                });
-                Navigator.of(context).pop();
-              }
-            },
-          ),
-        ],
       ),
     );
   }
@@ -279,14 +325,14 @@ class _AddMealScreenState extends State<AddMealScreen> {
     final p = ing.proteinPer100g * factor;
     final c = ing.carbsPer100g * factor;
     final f = ing.fatPer100g * factor;
-    final kcal = (p * 4 + c * 4 + f * 9).round();
+    final kcal = (ing.caloriesPer100g * factor).round();
     return (p, c, f, kcal);
   }
 
   double get _totalProtein => _items.fold(0.0, (sum, it) => sum + _macrosFor(it.ingredientId, it.weight).$1);
   double get _totalCarbs => _items.fold(0.0, (sum, it) => sum + _macrosFor(it.ingredientId, it.weight).$2);
   double get _totalFat => _items.fold(0.0, (sum, it) => sum + _macrosFor(it.ingredientId, it.weight).$3);
-  int get _totalKcal => (_totalProtein * 4 + _totalCarbs * 4 + _totalFat * 9).round();
+  int get _totalKcal => _items.fold(0, (sum, it) => sum + _macrosFor(it.ingredientId, it.weight).$4);
 
   Future<void> _saveAndAdd() async {
     final name = _mealNameController.text.trim();
@@ -309,6 +355,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           proteinPer100g: 0,
           carbsPer100g: 0,
           fatPer100g: 0,
+          caloriesPer100g: 0,
         );
       }
       return Ingredient(
@@ -318,6 +365,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
         proteinPer100g: base.proteinPer100g,
         carbsPer100g: base.carbsPer100g,
         fatPer100g: base.fatPer100g,
+        caloriesPer100g: base.caloriesPer100g,
       );
     }).toList();
 
@@ -340,6 +388,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
           proteinPer100g: 0,
           carbsPer100g: 0,
           fatPer100g: 0,
+          caloriesPer100g: 0,
         );
       }
       return Ingredient(
@@ -349,6 +398,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
         proteinPer100g: base.proteinPer100g,
         carbsPer100g: base.carbsPer100g,
         fatPer100g: base.fatPer100g,
+        caloriesPer100g: base.caloriesPer100g,
       );
     }).toList();
 
@@ -529,12 +579,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
                                   Navigator.of(context).pop();
                                   await _promptMacrosPer100(
                                       existing: base,
-                                      onConfirmed: (pp, cc, ff) async {
+                                      onConfirmed: (pp, cc, ff, kk) async {
                                         final iProv = context.read<IngredientProvider>();
                                         await iProv.update(base.copyWith(
                                           proteinPer100g: pp,
                                           carbsPer100g: cc,
                                           fatPer100g: ff,
+                                          caloriesPer100g: kk,
                                         ));
                                         if (mounted) setState(() {});
                                       });

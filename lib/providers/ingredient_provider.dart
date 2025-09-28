@@ -17,6 +17,19 @@ class IngredientProvider with ChangeNotifier {
     _ingredients
       ..clear()
       ..addAll(raw.map((e) => Ingredient.fromMap(json.decode(e))));
+    // Ensure a default Water ingredient exists (0 kcal, 0 macros)
+    final hasWater = _ingredients.any((e) => e.name.trim().toLowerCase() == 'water');
+    if (!hasWater) {
+      _ingredients.add(Ingredient(
+        name: 'Water',
+        weight: 100,
+        proteinPer100g: 0,
+        carbsPer100g: 0,
+        fatPer100g: 0,
+        caloriesPer100g: 0,
+      ));
+      await _save();
+    }
     notifyListeners();
   }
 
